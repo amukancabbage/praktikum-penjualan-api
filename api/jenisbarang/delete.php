@@ -12,7 +12,9 @@ $response["message"] = "";
 if (
     !empty($data->id)
 ) {
+
     $jenisbarang->id = $data->id;
+    
     if ($jenisbarang->delete()) {
         http_response_code(201);
         $response["success"] = true;

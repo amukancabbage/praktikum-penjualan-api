@@ -12,8 +12,10 @@ $response["message"] = "";
 if (
     !empty($data->namajenisbarang)
 ) {
+
     $jenisbarang->namajenisbarang = $data->namajenisbarang;
     $jenisbarang->id = $jenisbarang->create();
+    
     if ($jenisbarang->id != 0) {
         $stmt = $jenisbarang->find();
         $num = $stmt->rowCount();
