@@ -22,14 +22,11 @@ if (
     $pengguna->id = $pengguna->create();
     if ($pengguna->id != 0) {
         $stmt = $pengguna->find();
-        $num = $stmt->rowCount();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pengguna_item = array(
-                "id" => $row["id"],
-                "username" => $row["username"]
-            );
-            array_push($response["data"], $pengguna_item);
-        }
+        $row = $stmt->fetch();
+        $response["data"] = array(
+            "id" => $row["id"],
+            "username" => $row["username"]
+        );
         http_response_code(201);
         $response["success"] = true;
         $response["message"] = "create data pengguna berhasil";

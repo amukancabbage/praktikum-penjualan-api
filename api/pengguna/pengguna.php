@@ -86,7 +86,12 @@ class Pengguna
     $stmt->bindParam(1, $this->username);
     $stmt->bindParam(2, $this->password);
     if ($stmt->execute()) {
-      return $stmt->rowCount() > 0 ? true : false;
+      if ($stmt->rowCount() > 0){
+        $row = $stmt->fetch();
+        return $row['id'];
+      }
     }
+
+    return 0;
   }
 }

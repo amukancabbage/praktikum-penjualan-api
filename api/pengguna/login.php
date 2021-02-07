@@ -2,6 +2,14 @@
 include_once "../../config/api-header.php";
 include_once "pengguna.php";
 
+include_once '../../config/api-core.php';
+include_once '../../config/php-jwt-master/src/BeforeValidException.php';
+include_once '../../config/php-jwt-master/src/ExpiredException.php';
+include_once '../../config/php-jwt-master/src/SignatureInvalidException.php';
+include_once '../../config/php-jwt-master/src/JWT.php';
+
+use \Firebase\JWT\JWT;
+
 $pengguna = new Pengguna($db);
 $data = json_decode(file_get_contents("php://input"));
 
@@ -15,20 +23,27 @@ if (
 ) {
     $pengguna->username = $data->username;
     $pengguna->password = $data->password;
+    $pengguna->id = $pengguna->login();
+    if ($pengguna->id != 0) {
 
-    if ($pengguna->login()) {
         $stmt = $pengguna->find();
-        $num = $stmt->rowCount();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pengguna_item = array(
+        $row = $stmt->fetch();
+        $token = array(
+            "iat" => $issued_at,
+            "exp" => $expiration_time,
+            "iss" => $issuer,
+            "data" => array(
                 "id" => $row["id"],
                 "username" => $row["username"],
                 "namalengkap" => $row["namalengkap"]
-            );
-            array_push($response["data"], $pengguna_item);
-        }
-        http_response_code(201);
+            )
+        );
+
+        $jwt = JWT::encode($token, $key);
+
+        http_response_code(200);
         $response["success"] = true;
+        $response["data"] = $jwt;
         $response["message"] = "login berhasil";
     } else {
         http_response_code(503);
